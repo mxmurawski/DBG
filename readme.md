@@ -13,16 +13,6 @@ Ensure that all *.sh files have LF line endings and run below command:<br><br><i
 Alternatively You can run start.ps1 Powershell script file which automatically convert all *.sh files' line endings from
 CRLF to LF.
 
-# Credentials to test server:
-
-ip: 20.107.245.249\
-universal username: collegiumdavinci<br>
-universal password: collegiumdavinci123!<br>
-
-port 5432 - Postgres<br>
-port 1443 - MSSQL<br>
-port 22 - SSH<br>
-
 # Automatically created app users
 
 <table>
