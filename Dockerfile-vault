@@ -1,0 +1,5 @@
+FROM debian
+EXPOSE 8200
+COPY vault-deploy.sh /
+COPY vault_1.15.4-1_amd64.deb /
+ENTRYPOINT [ "sh", "/vault-deploy.sh"]

@@ -1,0 +1,92 @@
+version: "3.7"
+services:
+  db:
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${DBG_DB_PASSWORD}
+    ports:
+      - "1433:1433"
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    volumes:
+      - /var/opt/mssql
+
+  vault:
+    ports:
+      - "8200:8200"
+    build:
+      context: .
+      dockerfile: Dockerfile-vault
+    volumes:
+      - /vault
+
+  api:
+    entrypoint: "bash s.sh"
+    depends_on:
+      - db
+      - vault
+      - postgres-worker
+      - mssql-worker
+      - ssh-worker
+    ports:
+      - 10000:80
+    build:
+      context: .
+      dockerfile: DBG.API\Dockerfile
+    volumes_from:
+      - vault:rw
+    environment:
+      - POSTGRESCLIENTADDR=http://postgres-worker:80
+      - MSSQLCLIENTADDR=http://mssql-worker:80
+      - LINUXCLIENTADDR=http://ssh-worker:80
+      - DbConnectionString=${DBG_CONNECTIONSTRING}
+      - VAULTADDR=https://vault:8200
+
+  postgres-worker:
+    entrypoint: "bash s.sh"
+    depends_on:
+      - db
+      - vault
+    ports:
+      - 10001:80
+    build:
+      context: .
+      dockerfile: DBG.PostgresWorker\Dockerfile
+    volumes_from:
+      - vault:rw
+    environment:
+      - DbConnectionString=${DBG_CONNECTIONSTRING}
+      - VAULTADDR=https://vault:8200
+
+  mssql-worker:
+    entrypoint: "bash s.sh"
+    depends_on:
+      - db
+      - vault
+    ports:
+      - 10002:80
+    build:
+      context: .
+      dockerfile: DBG.MSSQLWorker\Dockerfile
+    volumes_from:
+      - vault:rw
+    environment:
+      - DbConnectionString=${DBG_CONNECTIONSTRING}
+      - VAULTADDR=https://vault:8200
+
+  ssh-worker:
+    entrypoint: "bash s.sh"
+    depends_on:
+      - db
+      - vault
+    ports:
+      - 10003:80
+    build:
+      context: .
+      dockerfile: DBG.SSHWorker\Dockerfile
+    volumes_from:
+      - vault:rw
+    environment:
+      - DbConnectionString=${DBG_CONNECTIONSTRING}
+      - VAULTADDR=https://vault:8200

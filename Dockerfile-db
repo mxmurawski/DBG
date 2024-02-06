@@ -1,0 +1,6 @@
+FROM mcr.microsoft.com/mssql/server:2022-latest
+EXPOSE 1433
+USER root
+COPY db-deploy.sh /opt/mssql
+COPY migration.sql /opt/mssql
+ENTRYPOINT [ "sh", "/opt/mssql/db-deploy.sh"]

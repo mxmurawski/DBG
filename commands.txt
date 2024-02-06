@@ -1,0 +1,3 @@
+dotnet ef migrations add InitialMigration --project .\DBG.Infrastructure\ --startup-project .\DBG.API\
+dotnet ef database update --project .\DBG.API
+dotnet ef migrations script --project .\DBG.Infrastructure\ --startup-project .\DBG.API\ -o migration.sql 
